@@ -14,9 +14,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import ppscore as ppscore
-from sklearn.preprocessing import OneHotEncoder
+from sklearn import *
 %matplotlib inline
+import ppscore as ppscore
 ```
 
 
@@ -189,7 +189,7 @@ for feature in data.columns:
 * 4. [Conclusions](#fourth-bullet)
 
 
-# 1. Correlation with Original Data <a class="anchor" id="first-bullet"></a>
+# 1. Correlation with Original Data <a class="anchor" id="first-bullet"></a>
 
 We will use the Pandas function *dataframe.corr()* to find the correlation between numeric variables only. 
 The return of this function give us a score ranging from -1 to 1 that indicates if there is a strong linear relationship in a positive or negative direction.
@@ -217,28 +217,29 @@ ca = sns.heatmap(corr, cmap='coolwarm',center=0, vmin = -1,
 ```
 
 
-![png](outputs/output_12_0.png)
+![png](output/output_12_0.png)
 
 
 
 ```python
 sns.set(style="ticks", color_codes=True)
-g = sns.pairplot(data)
+g = sns.pairplot(data, palette="coolwarm")
+title = g.fig.suptitle("Scores Pair Plot", y = 1.05)
 ```
 
 
-![png](outputs/output_13_0.png)
+![png](output/output_13_0.png)
 
 
 Looking at the scores and the graphs we can say that the three scores are highly related, students who do well in one subject are more likely to do well in the other subjects.
 
 **Math, reading and writing score are have a strong positive linear relationship.**
 
-# 2. Working with categorical variables <a class="anchor" id="second-bullet"></a>
+# 2. Working with categorical variables <a class="anchor" id="second-bullet"></a>
 
 We are going to explore two options here: label encoding and one-hot encoding.
 
-## 2.1 Label Encoding <a class="anchor" id="label-encoding"></a>
+## 2.1 Label Encoding <a class="anchor" id="label-encoding"></a>
 
 This approach consists in converting each value in a column to a number: in column *Lunch* 'standard' will be represented by a 1 and 'free/reduced' by a 0.
 
@@ -311,7 +312,7 @@ ca = sns.heatmap(corr_label_encoding, cmap='coolwarm',center=0, vmin = -1,
 ```
 
 
-![png](outputs/output_24_0.png)
+![png](output/output_24_0.png)
 
 
 Label encoding has one great disadvantage: the numeric values may be misinterpreted by algorithms as having some kind of order. If gender / race category assinged group A, B, C, D and E to values 0, 1, 2, 3 and 4 respectively it may be assumed by the algorithm that somehow group E is hierarchically greater than group A.
@@ -340,12 +341,12 @@ plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
 
 
-    <matplotlib.legend.Legend at 0x11cf8bb70>
+    <matplotlib.legend.Legend at 0x122134470>
 
 
 
 
-![png](outputs/output_29_1.png)
+![png](output/output_29_1.png)
 
 
 If we go back to the correlation table we can observe that math score has a slight positive correlation with gender, whereas reading and writing have a slight negative one.
@@ -374,12 +375,12 @@ plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
 
 
-    <matplotlib.legend.Legend at 0x11c6f80b8>
+    <matplotlib.legend.Legend at 0x124192860>
 
 
 
 
-![png](outputs/output_33_1.png)
+![png](output/output_33_1.png)
 
 
 We found ourselves in quite a similar position as in gender influence study. Values associated to groups A, B, C, D and E are 0, 1, 2, 3 and 4 respectively, and as D and E groups tend to score a little bit better, race/ethnicity shows a slight positive relation in the correlation matrix (0.22, 0.15, 0.17). 
@@ -408,12 +409,12 @@ plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
 
 
-    <matplotlib.legend.Legend at 0x11998aac8>
+    <matplotlib.legend.Legend at 0x124407898>
 
 
 
 
-![png](outputs/output_37_1.png)
+![png](output/output_37_1.png)
 
 
 Students that have completed the test preparation course tend to score better on all three areas: math, reading and writing (seems reasonable, but never forget correlation does not imply causation!). Although records are very unbalanced: there are many more students who have not taken the course than those who have.
@@ -432,7 +433,7 @@ dt_tmp['test preparation course'].value_counts()
 
 
 
-There are almost twice of students that haven't completed the course. 
+There are almost twice as many students who have not completed the course.
 
 ### 2.1.4. Lunch Plan Influence <a class="anchor" id="lunch-plan-influence"></a>
 
@@ -456,12 +457,12 @@ plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
 
 
-    <matplotlib.legend.Legend at 0x11fc13e48>
+    <matplotlib.legend.Legend at 0x121a37748>
 
 
 
 
-![png](outputs/output_43_1.png)
+![png](output/output_43_1.png)
 
 
 
@@ -480,7 +481,7 @@ dt_tmp['lunch'].value_counts()
 
 As happens in course preparation, there's twice as many registers for standard lunch plan than for free/reduced. By the figures in the correlation matrix and the plots showed below this paragraph, we can observe that score median for all three areas is higher for thoose students with starndar lunch plan.
 
-## 2.2 One-Hot Encoding <a class="anchor" id="one-hot-encoding"></a>
+## 2.2 One-Hot Encoding <a class="anchor" id="one-hot-encoding"></a>
 
 This approach consists in breaking each possible option of each categorical variable to features of value 1 or 0.
 
@@ -510,7 +511,7 @@ ca = sns.heatmap(corr_label_encoding, cmap='coolwarm',center=0, vmin = -1,
 ```
 
 
-![png](outputs/output_51_0.png)
+![png](output/output_51_0.png)
 
 
 I particularly like this method better because there is no place for misinterpretation caused by hierarchical number encoding. It also allows us to find relationships associated with one of the values of the category even if the category as a whole is unrelated.
@@ -521,13 +522,85 @@ For all variables that only have to disctinct possible values results will be th
 
 ### 2.2.1.  Broken Down Race/Ethnicity  <a class="anchor" id="broken-down-race-ethnicity"></a>
 
-Breaking the Race/Ethnicity variable in 5 confirms our hypothesis from the previous section: the groups with influence are D and E, while the rest have hardly any relevance on the three scores.
+Breaking the Race/Ethnicity variable in 5 confirms our hypothesis from the previous section: the only group with some correlation is group E (a maybe a little bit group D), while the rest have hardly any relevance on the three scores.
+
+
+```python
+dt_tmp = data_onehotencoding[['math score', 'reading score', 'writing score', 'race/ethnicity_group E']].copy()
+```
+
+
+```python
+# Set up the matplotlib figure
+sns.set(style="ticks", color_codes=True)
+pairplot_group_E = sns.pairplot(hue='race/ethnicity_group E',data=dt_tmp, palette="coolwarm")
+title = pairplot_group_E.fig.suptitle("Race/Ethnicity Group E influence on scores", y = 1.05)
+```
+
+
+![png](output/output_57_0.png)
+
+
+The greatest relevance is found in the math score where we can see the center of the distribution is shifted to the right: people of group E race/ethnicity tend to score better in maths that those who don't belong to group E.
 
 ### 2.2.2. Broken Down Parental Education <a class="anchor" id="broken-down-parental-education"></a>
 
 In this case the hot encoding reveals some very interesting insights: some parental education levels have an influence on reading and writing scores, while considerably less on mathematics.
 
-# 3. Bonus: Testing PPSCORE package <a class="anchor" id="third-bullet"></a>
+The levels of parental Education that seem to influence the most are: high school and master's degree.
+
+**- Parental Level of Education: High School**
+
+
+```python
+dt_tmp = data_onehotencoding[['math score', 'reading score', 'writing score', "parental level of education_high school"]].copy()
+```
+
+
+```python
+# Set up the matplotlib figure
+sns.set(style="ticks", color_codes=True)
+pairplot_bachelor = sns.pairplot(hue="parental level of education_high school",data=dt_tmp, palette="coolwarm")
+title = pairplot_group_E.fig.suptitle("Parental level of education_high_school", y = 1.05)
+```
+
+
+![png](output/output_64_0.png)
+
+
+Students whose parents have a high school education are more likely to get worse grades in all three subjects.
+
+**- Parental Level of Education: Master's degree**
+
+
+```python
+dt_tmp = data_onehotencoding[['math score', 'reading score', 'writing score', "parental level of education_master's degree"]].copy()
+```
+
+
+```python
+# Set up the matplotlib figure
+sns.set(style="ticks", color_codes=True)
+pairplot_bachelor = sns.pairplot(hue="parental level of education_master's degree",data=dt_tmp, palette="coolwarm")
+title = pairplot_group_E.fig.suptitle("Parental level of education_master's degree influence on scores", y = 1.05)
+```
+
+
+![png](output/output_68_0.png)
+
+
+The other way around happens for students whose parents have a master's degree education: they are more likely to score better in all three areas.
+
+# 3. Bonus: Testing PPSCORE package <a class="anchor" id="third-bullet"></a>
+
+In the words of the post writer: "the predictive power score is a normalized metric (**values range from 0 to 1**) that shows you to what extent you can use a variable X (say age) to predict a variable Y (say weight in kgs)."
+
+Benefits:
+- PPS also detects and summarizes non-linear relationships
+- PPS is assymetric, so that it models Y ~ X, but not necessarily X ~ Y
+- PPS can summarize predictive value of / among categorical variables and nominal data
+
+Let's try it with our data:
 
 
 ```python
@@ -552,19 +625,75 @@ ra_ppscore = sns.heatmap(ppmatrix, vmin=0, vmax=1, cmap="coolwarm", linewidths=1
 ```
 
 
-![png](outputs/output_61_0.png)
+![png](output/output_74_0.png)
 
 
+The first thing that stands out is that the PPS score between the math score and the reading and writing score is quite low. Remember we had correlation scores of 0.8 and 0.82 respectively for the two variables. Overall, most of the variables would not provide enough information to predict scores, except the reading with writing score and vice versa (but remember they are not symetric).
 
-```python
+Why dont we quickly check? (really dummy experiment)
 
-```
-
-# 4. Conclusions <a class="anchor" id="fourth-bullet"></a>
-
-Fun correlation does not imply causation example: http://web.stanford.edu/class/hrp259/2007/regression/storke.pdf
+Let's try to predict math score with all the other variables in the dataframe:
 
 
 ```python
+X = data_label_encoding.drop(['math score', 'gender', 'race/ethnicity', 'parental level of education',
+                             'lunch', 'test preparation course'], axis = 1)
+y = data_label_encoding['math score']
+X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.33, random_state=42)
 
+linearRegressor = linear_model.LinearRegression()
+linearRegressor.fit(X_train, y_train)
+y_predicted = linearRegressor.predict(X_test)
 ```
+
+
+```python
+metrics.mean_squared_error(y_predicted, y_test)
+```
+
+
+
+
+    30.774583234525572
+
+
+
+Well yeah, result is pretty awful.
+
+And what about trying to predict writing score just with reading score?
+
+
+```python
+X = data_label_encoding['reading score'].values
+y = data_label_encoding['writing score'].values
+X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.33, random_state=42)
+
+linearRegressor = linear_model.LinearRegression()
+linearRegressor.fit(X_train.reshape(-1, 1) , y_train.reshape(-1, 1) )
+y_predicted = linearRegressor.predict(X_test.reshape(-1, 1) )
+```
+
+
+```python
+metrics.mean_squared_error(y_predicted, y_test)
+```
+
+
+
+
+    22.073317824249827
+
+
+
+Slightly better as the PPS score predicted... but anyways, quite awful too.
+
+Sadly, for this dataset PPS score has not revealed any decisive variable for predicting all three scores: math, reading and writing.
+
+# 4. Conclusions <a class="anchor" id="fourth-bullet"></a>
+
+As shown in prev graphs, the highest correlation between variables / features are:
+- Writing score and Gender (also Math and Reading but slightly smaller)
+- Race/Ethnicity group E and Math Score
+- Parental Level of Education High School with Writing and Reading Scores
+- Lunch plan and Math Score (also and Reading and Writing but slightly smaller)
+- Test preparation course and Writing and Reading Score (also Math but slightly smaller)
